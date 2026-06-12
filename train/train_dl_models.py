@@ -72,8 +72,9 @@ def evaluate_model(model_name, model, X_test, y_test, preprocess_func):
 
 def main():
     print("=== 步驟 1: 讀取圖片 ===")
-    train_dir = os.path.join('..', 'dataset', 'train')
-    test_dir = os.path.join('..', 'dataset', 'test')
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    train_dir = os.path.join(SCRIPT_DIR, '..', 'dataset', 'train')
+    test_dir = os.path.join(SCRIPT_DIR, '..', 'dataset', 'test')
     
     # 使用 96x96 解析度 (在樹莓派上推理速度較快)
     IMG_SIZE = (96, 96)
@@ -130,7 +131,7 @@ def main():
             
     print(f"\n🏆 表現最好的模型是: {best_model_name} (Accuracy: {best_acc:.4f})")
     
-    best_model_path = os.path.join('..', 'demo', 'best_dl_model.keras')
+    best_model_path = os.path.join(SCRIPT_DIR, '..', 'demo', 'best_dl_model.keras')
     if best_model_name == 'MobileNetV3Small':
         mb_model.save(best_model_path)
     else:
@@ -138,7 +139,8 @@ def main():
         
     print(f"✅ 已將最好的模型 ({best_model_name}) 儲存至: {best_model_path}")
     print("💡 為了紀錄預處理方式，我們也將模型名稱寫入一個文字檔：")
-    with open(os.path.join('..', 'demo', 'dl_model_info.txt'), 'w') as f:
+    info_path = os.path.join(SCRIPT_DIR, '..', 'demo', 'dl_model_info.txt')
+    with open(info_path, 'w') as f:
         f.write(best_model_name)
 
 if __name__ == '__main__':

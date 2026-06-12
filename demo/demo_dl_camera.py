@@ -3,10 +3,12 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
+from collections import deque
 
 def main():
-    model_path = 'best_dl_model.keras'
-    info_path = 'dl_model_info.txt'
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(SCRIPT_DIR, 'best_dl_model.keras')
+    info_path = os.path.join(SCRIPT_DIR, 'dl_model_info.txt')
     
     if not os.path.exists(model_path):
         print(f"❌ 錯誤：找不到模型檔案 '{model_path}'。請先執行 train_dl_models.py")
@@ -22,7 +24,11 @@ def main():
     print(f"✅ 成功載入深度學習模型: {model_type}")
     
     labels = ['Rock', 'Paper', 'Scissors']
-    THRESHOLD = 0.6
+    THRESHOLD = 0.85
+    
+    # 時間平滑：紀錄過去 N 幀的機率來取平均，讓辨識結果更穩定
+    history_length = 5
+    prob_history = deque(maxlen=history_length)
     
     camera_id = 0
     if len(sys.argv) > 1:
@@ -62,8 +68,13 @@ def main():
         
         # 進行預測
         probs = model.predict(X, verbose=0)[0]
-        max_prob = np.max(probs)
-        pred_idx = np.argmax(probs)
+        
+        # 移動平均 (Temporal Smoothing)
+        prob_history.append(probs)
+        avg_probs = np.mean(prob_history, axis=0)
+        
+        max_prob = np.max(avg_probs)
+        pred_idx = np.argmax(avg_probs)
 
         # 判斷結果或 Error
         if max_prob < THRESHOLD:
