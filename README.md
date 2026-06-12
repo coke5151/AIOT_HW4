@@ -1,55 +1,20 @@
-## 刷機
+# AIOT 手勢辨識作業報告
 
-https://www.raspberrypi.com/software/
+## Part 1: Raspberry Pi 4 執行截圖 (50%)
 
-1.	下載 Raspberry Pi Imager
-    ![alt text](image.png)
-2.	選擇 Raspberry Pi 4 64-bit
-    ![alt text](image-1.png)
-3.	插上讀卡機
-    ![alt text](image-2.png)
-4.	輸入主機名，ssh 會用到
-    ![alt text](image-3.png)
-5.	首都 Taipei ;時區Asia/Taipei
-    ![alt text](image-4.png)
-6.	輸入用戶名及密碼，ssh 會用到
-    ![alt text](image-5.png)
-7.	開啟 ssh
-    ![alt text](image-6.png)
-8.	完成寫入
-    ![alt text](image-7.png)
+![](image-8.png)
+
+![](image-9.png)
+
 
 ---
 
-## 運行
-
-https://github.com/BiBaIsAFish/RSP_demo
-
-1.	下載 github
-2.	Demo carema
-    ![](17903.jpg)
-    ![](17904.jpg)
+### Part 2: Demo 展示影片
+👉 [點此觀看 10 次手勢辨識 Demo 影片 (包含 Rock, Scissors, Paper, Error)](https://youtu.be/dyrgbQMkEnE)
 
 ---
 
-## 評分標準
-
-- 成功在 Raspberry Pi 4 上執行 test.py & carema.py 50%
-- Demo 展示影片(carema) 15%
-    - 從兩個模型中選擇較強的模型，寫一支程式將 carema 接收到的畫面接到模型上進行分類，並錄一段 demo 10 個手勢的短片
-    - 執行 10 次手勢辨識，且須包含以下手勢
-        - 石頭(Rock)
-        - 剪刀(Scissors)
-        - 布(Paper)
-        - 其他錯誤手勢 (Error)
-- 報告 35%
-	- 需自行找兩個模型架構修改 20%
-		- 至少需呈現 accuracy, precision, recall, F1-score
-	- 需解釋更換模型原因及比較差異 15%
-
----
-
-## 報告 (Part 3: Report)
+## Part 3: 模型比較與修改報告 (35%)
 
 ### 1. 模型比較數據 (Accuracy, Precision, Recall, F1-Score)
 為了解決傳統機器學習在處理原始影像像素時缺乏平移不變性（導致結果亂跳、無法準確辨識）的問題，我們改用卷積神經網路 (CNN) 進行遷移學習 (Transfer Learning)。我們將圖片縮放為 96x96 之 RGB 影像，並測試了以下兩種輕量級與經典的 CNN 模型：
@@ -58,10 +23,10 @@ https://github.com/BiBaIsAFish/RSP_demo
 
 實驗數據統整如下表所示：
 
-| 模型 (Model) | Accuracy (準確率) | Precision (精確率) | Recall (召回率) | F1-Score |
-| :--- | :--- | :--- | :--- | :--- |
-| **MobileNetV3Small** | **0.9462** | **0.9525** | **0.9462** | **0.9455** |
-| DenseNet121 | 0.8306 | 0.8877 | 0.8306 | 0.8286 |
+| 模型 (Model)         | Accuracy (準確率) | Precision (精確率) | Recall (召回率) | F1-Score   |
+| :------------------- | :---------------- | :----------------- | :-------------- | :--------- |
+| **MobileNetV3Small** | **0.9462**        | **0.9525**         | **0.9462**      | **0.9455** |
+| DenseNet121          | 0.8306            | 0.8877             | 0.8306          | 0.8286     |
 
 **🏆 最終選擇：MobileNetV3Small (Accuracy: 94.62%)** 表現最為優異，因此獲選作為攝影機即時推論的最終模型。
 
@@ -79,8 +44,8 @@ https://github.com/BiBaIsAFish/RSP_demo
 3. 我們將機率門檻 (Threshold) 設定為 **75%**。
 4. 若攝影機捕捉到的畫面，經模型預測並平滑後的最高機率仍 **小於 0.75 (75%)**，則系統會判定該畫面不屬於任何已知手勢，並在畫面上顯示為 **Error** (紅色字樣)。加上時間平滑後，這完美解決了無關手勢或無手勢狀態的辨識需求，且讓畫面顯示非常穩定。
 
-### 4. AI 協作對話截圖
-*(請將你與 Antigravity AI 對話討論更換為 CNN 架構、訓練 MobileNetV3Small 與解決畫面亂跳問題的相關截圖貼在此處)*
+### 4. AI 協作對話
+請見 [chat.md](chat.md)。
 
 ---
 
@@ -88,7 +53,16 @@ https://github.com/BiBaIsAFish/RSP_demo
 1. 確保攝影機已連接至設備。
 2. 啟動虛擬環境並確保已安裝 Tensorflow 及 OpenCV (`tensorflow`, `opencv-python`, `numpy`)。
 3. 執行新的深度學習攝影機推論程式：
+
    ```bash
    python demo/demo_dl_camera.py
    ```
+
 4. 對著鏡頭 (藍色框框內) 比出石頭、剪刀、布，或者其他無關的手勢來測試 Error 判定。按 `q` 鍵即可退出程式。
+
+---
+
+### 附錄：程式碼
+為符合報告要求，本專案的重要程式碼附於下列檔案中：
+- **模型訓練與評估程式碼**：[`train/train_dl_models.py`](train/train_dl_models.py)
+- **攝影機即時推論程式碼 (取代原本的 carema.py)**：[`demo/demo_dl_camera.py`](demo/demo_dl_camera.py)
