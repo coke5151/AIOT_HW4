@@ -1,5 +1,7 @@
 # AIOT 手勢辨識作業報告
 
+[Github Link](https://github.com/coke5151/AIOT_HW4.git)
+
 ## Part 1: Raspberry Pi 4 執行截圖 (50%)
 
 ![](image-8.png)
