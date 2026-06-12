@@ -24,10 +24,10 @@ def main():
     print(f"✅ 成功載入深度學習模型: {model_type}")
     
     labels = ['Rock', 'Paper', 'Scissors']
-    THRESHOLD = 0.85
+    THRESHOLD = 0.75
     
     # 時間平滑：紀錄過去 N 幀的機率來取平均，讓辨識結果更穩定
-    history_length = 5
+    history_length = 3
     prob_history = deque(maxlen=history_length)
     
     camera_id = 0
